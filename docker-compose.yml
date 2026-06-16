@@ -6,13 +6,13 @@
 #   docker compose up --build -d
 #
 # After building, push to Docker Hub:
-#   docker push henriVS/nexus-frontend:latest
-#   docker push henriVS/nexus-backend:latest
+#   docker push henrivs/nexus-frontend:latest
+#   docker push henrivs/nexus-backend:latest
 
 services:
 
   frontend:
-    image: henriVS/nexus-frontend:latest   # tagged automatically on build
+    image: henrivs/nexus-frontend:latest   # tagged automatically on build
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -28,7 +28,7 @@ services:
       - nexus
 
   backend:
-    image: henriVS/nexus-backend:latest    # tagged automatically on build
+    image: henrivs/nexus-backend:latest    # tagged automatically on build
     build:
       context: ./backend
       dockerfile: Dockerfile
