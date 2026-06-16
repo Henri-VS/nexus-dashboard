@@ -446,7 +446,7 @@ Set `NEXUS_SECRET_KEY` to an empty string to disable auth entirely — only do t
 
 **Port 3000 already in use** — edit `docker-compose-hub.yml` and change `"3000:3000"` to `"3001:3000"` (or any free port).
 
-**Images won't pull** — check your internet connection and that Docker Desktop is running. Try `docker pull henriVS/nexus-frontend:latest` manually to see the full error.
+**Images won't pull** — check your internet connection and that Docker Desktop is running. Try `docker pull henrivs/nexus-frontend:latest` manually to see the full error.
 
 **Backend health check failing** — run `docker compose -f docker-compose-hub.yml logs backend` and check for Python errors. Most common cause: `NEXUS_SECRET_KEY` not set in `.env`.
 
