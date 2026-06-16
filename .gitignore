@@ -29,6 +29,7 @@ backend/uvicorn.log
 # Developer notes — not for public repo
 PROMPTS_*.md
 NEXUS_CLAUDE_CODE_PROMPTS.md
+CLAUDE.md
 TODO.md
 SPEC.md
 DEPLOY.md
