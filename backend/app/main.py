@@ -2,9 +2,12 @@ import asyncio
 import logging
 from contextlib import asynccontextmanager, suppress
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+
+_COOKIE_NAME = "nexus_session"
+_COOKIE_MAX_AGE = 60 * 60 * 24 * 30  # 30 days
 
 from app.core.config import settings
 from app.core.database import init_db
@@ -70,14 +73,22 @@ app.add_middleware(
 )
 
 
+_AUTH_EXEMPT = {"/api/auth/verify", "/api/auth/logout"}
+
+
 @app.middleware("http")
 async def _auth_middleware(request: Request, call_next):
-    # Skip CORS preflight and unauthenticated routes
+    # Skip CORS preflight, non-API paths, and auth endpoints
     if request.method == "OPTIONS" or not request.url.path.startswith("/api/"):
         return await call_next(request)
+    if request.url.path in _AUTH_EXEMPT:
+        return await call_next(request)
     if settings.nexus_secret_key:
-        auth = request.headers.get("Authorization", "")
-        token = auth[7:] if auth.startswith("Bearer ") else None
+        # Accept either HttpOnly cookie or Bearer token (backward compat)
+        cookie_token = request.cookies.get(_COOKIE_NAME)
+        auth_header = request.headers.get("Authorization", "")
+        bearer_token = auth_header[7:] if auth_header.startswith("Bearer ") else None
+        token = cookie_token or bearer_token
         if token != settings.nexus_secret_key:
             return JSONResponse({"detail": "Unauthorized"}, status_code=401)
     return await call_next(request)
@@ -86,6 +97,31 @@ async def _auth_middleware(request: Request, call_next):
 @app.get("/healthz")
 async def healthz():
     return {"status": "ok", "auth_enabled": bool(settings.nexus_secret_key)}
+
+
+@app.post("/api/auth/verify")
+async def auth_verify(request: Request, response: Response):
+    """Validate the secret key and set an HttpOnly session cookie."""
+    body = await request.json()
+    key = body.get("key", "")
+    if key != settings.nexus_secret_key:
+        return JSONResponse({"detail": "Unauthorized"}, status_code=401)
+    response.set_cookie(
+        key=_COOKIE_NAME,
+        value=settings.nexus_secret_key,
+        httponly=True,
+        samesite="lax",
+        secure=False,
+        max_age=_COOKIE_MAX_AGE,
+    )
+    return {"ok": True}
+
+
+@app.post("/api/auth/logout")
+async def auth_logout(response: Response):
+    """Clear the session cookie."""
+    response.delete_cookie(key=_COOKIE_NAME)
+    return {"ok": True}
 
 
 # ── Routers ──────────────────────────────────────────────────

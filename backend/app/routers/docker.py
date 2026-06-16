@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timezone
 
 from fastapi import APIRouter
@@ -52,7 +53,8 @@ async def get_containers():
     """
     try:
         import docker as docker_sdk  # noqa: PLC0415 — lazy import so missing SDK doesn't break startup
-        client = docker_sdk.from_env(timeout=5)
+        base_url = os.environ.get("DOCKER_HOST", "unix:///var/run/docker.sock")
+        client = docker_sdk.DockerClient(base_url=base_url, timeout=5)
         containers = client.containers.list(all=True)
     except Exception:
         # Docker not available (socket missing, daemon down, SDK not installed)

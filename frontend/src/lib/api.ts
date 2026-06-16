@@ -21,7 +21,10 @@ function authHeaders(): Record<string, string> {
 // Returns null on any failure — widgets handle the fallback to mock data.
 async function get<T>(path: string): Promise<T | null> {
 	try {
-		const res = await fetch(`${BASE}${path}`, { headers: authHeaders() });
+		const res = await fetch(`${BASE}${path}`, {
+			headers: authHeaders(),
+			credentials: 'include',
+		});
 		if (!res.ok) return null;
 		return res.json() as Promise<T>;
 	} catch {
@@ -34,6 +37,7 @@ async function post<T>(path: string, body: unknown): Promise<T | null> {
 		const res = await fetch(`${BASE}${path}`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json', ...authHeaders() },
+			credentials: 'include',
 			body: JSON.stringify(body),
 		});
 		if (!res.ok) return null;
@@ -48,6 +52,7 @@ async function put<T>(path: string, body: unknown): Promise<T | null> {
 		const res = await fetch(`${BASE}${path}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json', ...authHeaders() },
+			credentials: 'include',
 			body: JSON.stringify(body),
 		});
 		if (!res.ok) return null;
@@ -62,6 +67,7 @@ async function del<T>(path: string): Promise<T | null> {
 		const res = await fetch(`${BASE}${path}`, {
 			method: 'DELETE',
 			headers: authHeaders(),
+			credentials: 'include',
 		});
 		if (!res.ok) return null;
 		return res.json() as Promise<T>;
@@ -75,6 +81,7 @@ async function patch<T>(path: string): Promise<T | null> {
 		const res = await fetch(`${BASE}${path}`, {
 			method: 'PATCH',
 			headers: authHeaders(),
+			credentials: 'include',
 		});
 		if (!res.ok) return null;
 		return res.json() as Promise<T>;
@@ -82,6 +89,24 @@ async function patch<T>(path: string): Promise<T | null> {
 		return null;
 	}
 }
+
+// ── Auth ──────────────────────────────────────────────────────
+export const auth = {
+	verify: (key: string) =>
+		fetch(`${BASE}/api/auth/verify`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			credentials: 'include',
+			body: JSON.stringify({ key }),
+		}),
+	logout: async () => {
+		await fetch(`${BASE}/api/auth/logout`, {
+			method: 'POST',
+			credentials: 'include',
+		});
+		localStorage.removeItem('nexus_api_key');
+	},
+};
 
 // ── Heartbeat ─────────────────────────────────────────────────
 export interface HBHost {
@@ -207,7 +232,10 @@ export interface NewsArticle {
 // ── Quick Links ───────────────────────────────────────────────
 export const quicklinks = {
 	ping: (url: string) =>
-		fetch(`${BASE}/api/quicklinks/ping?url=${encodeURIComponent(url)}`, { headers: authHeaders() })
+		fetch(`${BASE}/api/quicklinks/ping?url=${encodeURIComponent(url)}`, {
+			headers: authHeaders(),
+			credentials: 'include',
+		})
 			.then((r) => r.ok ? r.json() as Promise<{ online: boolean; latency_ms: number | null }> : null)
 			.catch(() => null),
 };
@@ -236,6 +264,7 @@ export const ai = {
 		fetch(`${BASE}/api/ai/chat`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json', ...authHeaders() },
+			credentials: 'include',
 			body: JSON.stringify(body),
 		}),
 };

@@ -36,10 +36,13 @@ services:
       - "8088:8000"
     env_file:
       - .env
+    environment:
+      - DOCKER_HOST=tcp://dockerproxy:2375
     volumes:
       - ./data:/app/data
       - ${OBSIDIAN_VAULT_PATH:-./data/vault}:/vault:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - dockerproxy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
       interval: 30s
@@ -51,6 +54,24 @@ services:
       - nexus
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+  dockerproxy:
+    image: tecnativa/docker-socket-proxy:latest
+    environment:
+      CONTAINERS: 1
+      IMAGES: 1
+      INFO: 1
+      NETWORKS: 1
+      SERVICES: 1
+      TASKS: 1
+      VOLUMES: 1
+      POST: 0
+      DELETE: 0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - nexus
+    restart: unless-stopped
 
   excalidraw:
     image: excalidraw/excalidraw:latest

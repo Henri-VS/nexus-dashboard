@@ -1,16 +1,37 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { BASE } from '$lib/api';
 
 	let apiKey = $state('');
 	let error = $state('');
+	let loading = $state(false);
 
-	function connect() {
+	async function connect() {
 		if (!apiKey.trim()) {
 			error = 'API key is required';
 			return;
 		}
-		localStorage.setItem('nexus_api_key', apiKey.trim());
-		goto('/');
+		loading = true;
+		error = '';
+		try {
+			const res = await fetch(`${BASE}/api/auth/verify`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
+				body: JSON.stringify({ key: apiKey.trim() }),
+			});
+			if (!res.ok) {
+				error = 'Invalid API key';
+				return;
+			}
+			// Remove old localStorage key — session is now managed by HttpOnly cookie
+			localStorage.removeItem('nexus_api_key');
+			goto('/');
+		} catch {
+			error = 'Could not reach the API. Check that Nexus is running.';
+		} finally {
+			loading = false;
+		}
 	}
 
 	function handleKeydown(e: KeyboardEvent) {
@@ -42,7 +63,7 @@
 			<p class="error">{error}</p>
 		{/if}
 
-		<button onclick={connect}>Connect</button>
+		<button onclick={connect} disabled={loading}>{loading ? 'Connecting…' : 'Connect'}</button>
 	</div>
 </div>
 
