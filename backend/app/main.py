@@ -17,8 +17,15 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    if not settings.nexus_secret_key:
-        logger.warning("NEXUS_SECRET_KEY is not set — authentication is DISABLED (dev mode)")
+    key = settings.nexus_secret_key
+    if not key or key in ("change-me-to-a-random-secret",) or len(key) < 16:
+        import sys
+        print(
+            "FATAL: NEXUS_SECRET_KEY is not set or is insecure. "
+            "Set a random key of at least 16 characters in .env",
+            flush=True,
+        )
+        sys.exit(1)
     if not rag_core._CHROMA_AVAILABLE:
         logger.warning("chromadb not installed — RAG disabled. Run: pip install chromadb")
     ensure_nexus_dirs()
