@@ -70,18 +70,7 @@
 	const STORAGE_KEY = 'nexus_resources';
 	const PAGE_KEY    = 'dashboard_config.resources';
 
-	const DEFAULT_FOLDERS: ResourceFolder[] = [
-		{ id: 's1',         name: 'Semester 1', parentId: null },
-		{ id: 's1-itpla',   name: 'ITPLA',      parentId: 's1' },
-		{ id: 's1-itmta',   name: 'ITMTA',      parentId: 's1' },
-		{ id: 's1-itcna',   name: 'ITCNA',      parentId: 's1' },
-		{ id: 's1-itlsa',   name: 'ITLSA',      parentId: 's1' },
-		{ id: 's2',         name: 'Semester 2', parentId: null },
-		{ id: 's2-itpla',   name: 'ITPLA',      parentId: 's2' },
-		{ id: 's2-itmta',   name: 'ITMTA',      parentId: 's2' },
-		{ id: 's2-itcna',   name: 'ITCNA',      parentId: 's2' },
-		{ id: 's2-itlsa',   name: 'ITLSA',      parentId: 's2' },
-	];
+	const DEFAULT_FOLDERS: ResourceFolder[] = [];
 
 	let folders: ResourceFolder[] = [];
 	let files: ResourceFile[] = [];
@@ -176,7 +165,7 @@
 	}
 
 	function formatDate(ts: number): string {
-		return new Date(ts).toLocaleDateString('en-ZA', { day: '2-digit', month: 'short', year: 'numeric' });
+		return new Date(ts).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
 	}
 
 	// ── Upload ────────────────────────────────────────────────────────────────

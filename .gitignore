@@ -30,6 +30,8 @@ backend/uvicorn.log
 PROMPTS_*.md
 NEXUS_CLAUDE_CODE_PROMPTS.md
 TODO.md
+SPEC.md
+DEPLOY.md
 
 # Old file name — replaced by docker-compose-hub.yml
 docker-compose.hub.yml
