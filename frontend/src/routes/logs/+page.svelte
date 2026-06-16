@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { ScrollText, X, Download, Trash2, ChevronDown, ChevronUp } from '@lucide/svelte';
+	import DOMPurify from 'dompurify';
 
 	const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8088';
 
@@ -239,7 +240,7 @@
 						<span class="col-ts">{fmtTs(entry.ts)}</span>
 						<span class="col-lvl" style="color:{levelColor(entry.level)}">{entry.level.slice(0,4)}</span>
 						<span class="col-src">{entry.source}</span>
-						<span class="col-msg">{@html highlight(entry.message, search)}</span>
+						<span class="col-msg">{@html DOMPurify.sanitize(highlight(entry.message, search))}</span>
 					</div>
 				{/each}
 			</div>

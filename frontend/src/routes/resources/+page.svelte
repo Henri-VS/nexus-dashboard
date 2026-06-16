@@ -3,6 +3,7 @@
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { marked } from 'marked';
+	import DOMPurify from 'dompurify';
 	import {
 		Upload,
 		FolderPlus,
@@ -337,7 +338,7 @@
 
 	$: renderedMd = (() => {
 		if (selectedFile?.type !== 'md') return '';
-		try { return marked.parse(atob(selectedFile.content)) as string; }
+		try { return DOMPurify.sanitize(marked.parse(atob(selectedFile.content)) as string); }
 		catch { return ''; }
 	})();
 

@@ -2,6 +2,7 @@
 	import { tick } from 'svelte';
 	import { MessageSquare } from '@lucide/svelte';
 	import { marked } from 'marked';
+	import DOMPurify from 'dompurify';
 	import { ai as aiApi } from '$lib/api';
 	import { overlayOpen, overlayPrefill, overlayAutoSend, selectedModel } from '$lib/stores';
 	import { generateId } from '$lib/utils';
@@ -208,7 +209,7 @@
 						<div class="msg-body">
 							{#if msg.role === 'assistant'}
 								{#if msg.content}
-									{@html marked.parse(msg.content)}
+									{@html DOMPurify.sanitize(marked.parse(msg.content))}
 								{/if}
 								{#if msg.streaming}
 									<span class="cursor" aria-hidden="true">▋</span>

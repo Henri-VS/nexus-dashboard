@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { afterUpdate, onMount, onDestroy } from 'svelte';
 	import { marked } from 'marked';
+	import DOMPurify from 'dompurify';
 	import { X, Eye, Edit2, Columns, Download } from '@lucide/svelte';
 	import { type StoredFile, type Tab, parseFrontmatter, getFileType } from './types';
 	import { EXCALIDRAW_URL } from '$lib/api';
@@ -138,7 +139,7 @@
 		const body = stripFrontmatter(content);
 		const processed = preprocessImages(body);
 		const html = marked.parse(processed, { gfm: true, breaks: true }) as string;
-		return highlightWikilinks(html);
+		return highlightWikilinks(DOMPurify.sanitize(html));
 	}
 
 	$: rendered = file?.type === 'md' ? renderMarkdown(localContent) : '';
@@ -553,7 +554,7 @@
 								<polygon points="0 0, 8 3, 0 6" fill="#aaaaaa"/>
 							</marker>
 						</defs>
-						{@html excalidrawSvgContent}
+						{@html DOMPurify.sanitize(excalidrawSvgContent, { USE_PROFILES: { svg: true, svgFilters: true } })}
 					</svg>
 				</div>
 			{:else}

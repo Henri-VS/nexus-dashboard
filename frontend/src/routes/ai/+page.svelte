@@ -3,6 +3,7 @@
 	import { get } from 'svelte/store';
 	import { page } from '$app/stores';
 	import { marked } from 'marked';
+	import DOMPurify from 'dompurify';
 	import { selectedModel, nexusSettings, pendingAiContext } from '$lib/stores';
 	import { ai as aiApi, resources as resourcesApi } from '$lib/api';
 	import EmptyState from '$lib/components/EmptyState.svelte';
@@ -425,7 +426,7 @@
 
 	function renderMd(content: string): string {
 		if (!content) return '';
-		return marked.parse(content) as string;
+		return DOMPurify.sanitize(marked.parse(content) as string);
 	}
 
 	// ── Time ──────────────────────────────────────────────────────

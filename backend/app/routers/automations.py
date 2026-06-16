@@ -288,6 +288,9 @@ async def _action_webhook(cfg: dict) -> tuple[bool, str]:
     body    = cfg.get("body", "")
     if not url:
         return False, "webhook URL not specified"
+    from app.core.ssrf import is_safe_url
+    if not is_safe_url(url):
+        return False, "webhook URL not allowed (blocked by SSRF guard)"
     if isinstance(headers, str):
         try:
             headers = json.loads(headers)
@@ -308,6 +311,11 @@ def _action_log_entry(cfg: dict) -> tuple[bool, str]:
     _insert_raw(ts, level, "automation", message)
     return True, f"Log entry written: [{level}] {message}"
 
+# SECURITY WARNING: When enabled, any holder of NEXUS_SECRET_KEY can execute
+# arbitrary shell commands inside the backend container. Keep this disabled
+# unless you fully understand the risk. Never enable on an internet-exposed
+# instance. Combined with an XSS vulnerability, this becomes remote code
+# execution on the host.
 def _action_bash(cfg: dict) -> tuple[bool, str]:
     if not os.getenv("ALLOW_BASH_AUTOMATION", "").lower() in ("1", "true", "yes"):
         return False, "ALLOW_BASH_AUTOMATION not enabled"

@@ -12,19 +12,10 @@ export const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8088';
 
 export const EXCALIDRAW_URL = import.meta.env.PUBLIC_EXCALIDRAW_URL ?? 'http://localhost:3002';
 
-function authHeaders(): Record<string, string> {
-	if (typeof localStorage === 'undefined') return {};
-	const key = localStorage.getItem('nexus_api_key');
-	return key ? { Authorization: `Bearer ${key}` } : {};
-}
-
 // Returns null on any failure — widgets handle the fallback to mock data.
 async function get<T>(path: string): Promise<T | null> {
 	try {
-		const res = await fetch(`${BASE}${path}`, {
-			headers: authHeaders(),
-			credentials: 'include',
-		});
+		const res = await fetch(`${BASE}${path}`, { credentials: 'include' });
 		if (!res.ok) return null;
 		return res.json() as Promise<T>;
 	} catch {
@@ -36,7 +27,7 @@ async function post<T>(path: string, body: unknown): Promise<T | null> {
 	try {
 		const res = await fetch(`${BASE}${path}`, {
 			method: 'POST',
-			headers: { 'Content-Type': 'application/json', ...authHeaders() },
+			headers: { 'Content-Type': 'application/json' },
 			credentials: 'include',
 			body: JSON.stringify(body),
 		});
@@ -51,7 +42,7 @@ async function put<T>(path: string, body: unknown): Promise<T | null> {
 	try {
 		const res = await fetch(`${BASE}${path}`, {
 			method: 'PUT',
-			headers: { 'Content-Type': 'application/json', ...authHeaders() },
+			headers: { 'Content-Type': 'application/json' },
 			credentials: 'include',
 			body: JSON.stringify(body),
 		});
@@ -66,7 +57,6 @@ async function del<T>(path: string): Promise<T | null> {
 	try {
 		const res = await fetch(`${BASE}${path}`, {
 			method: 'DELETE',
-			headers: authHeaders(),
 			credentials: 'include',
 		});
 		if (!res.ok) return null;
@@ -80,7 +70,6 @@ async function patch<T>(path: string): Promise<T | null> {
 	try {
 		const res = await fetch(`${BASE}${path}`, {
 			method: 'PATCH',
-			headers: authHeaders(),
 			credentials: 'include',
 		});
 		if (!res.ok) return null;
@@ -104,7 +93,6 @@ export const auth = {
 			method: 'POST',
 			credentials: 'include',
 		});
-		localStorage.removeItem('nexus_api_key');
 	},
 };
 
@@ -233,7 +221,6 @@ export interface NewsArticle {
 export const quicklinks = {
 	ping: (url: string) =>
 		fetch(`${BASE}/api/quicklinks/ping?url=${encodeURIComponent(url)}`, {
-			headers: authHeaders(),
 			credentials: 'include',
 		})
 			.then((r) => r.ok ? r.json() as Promise<{ online: boolean; latency_ms: number | null }> : null)
@@ -263,7 +250,7 @@ export const ai = {
 	chat: (body: { model: string; message: string; conversation_id?: string }) =>
 		fetch(`${BASE}/api/ai/chat`, {
 			method: 'POST',
-			headers: { 'Content-Type': 'application/json', ...authHeaders() },
+			headers: { 'Content-Type': 'application/json' },
 			credentials: 'include',
 			body: JSON.stringify(body),
 		}),

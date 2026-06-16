@@ -12,7 +12,9 @@ from typing import Any
 
 import httpx
 import yaml
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
+
+from app.core.ssrf import is_safe_url
 from pydantic import BaseModel
 
 from app.core.nexus_dir import nexus_path
@@ -73,8 +75,10 @@ async def create_service(body: ServiceIn) -> dict[str, Any]:
 
 @router.get("/ping")
 async def ping_service(url: str) -> dict[str, Any]:
+    if not is_safe_url(url):
+        raise HTTPException(status_code=400, detail="URL not allowed")
     try:
-        async with httpx.AsyncClient(timeout=3.0, follow_redirects=True) as client:
+        async with httpx.AsyncClient(timeout=3.0, follow_redirects=False) as client:
             t0 = time.monotonic()
             resp = await client.get(url)
             ms = round((time.monotonic() - t0) * 1000)

@@ -1,10 +1,14 @@
 import asyncio
+import hmac
 import logging
 from contextlib import asynccontextmanager, suppress
 
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 _COOKIE_NAME = "nexus_session"
 _COOKIE_MAX_AGE = 60 * 60 * 24 * 30  # 30 days
@@ -72,6 +76,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+_limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = _limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
 
 _AUTH_EXEMPT = {"/api/auth/verify", "/api/auth/logout"}
 
@@ -89,7 +97,7 @@ async def _auth_middleware(request: Request, call_next):
         auth_header = request.headers.get("Authorization", "")
         bearer_token = auth_header[7:] if auth_header.startswith("Bearer ") else None
         token = cookie_token or bearer_token
-        if token != settings.nexus_secret_key:
+        if not token or not hmac.compare_digest(token, settings.nexus_secret_key):
             return JSONResponse({"detail": "Unauthorized"}, status_code=401)
     return await call_next(request)
 
@@ -100,11 +108,12 @@ async def healthz():
 
 
 @app.post("/api/auth/verify")
+@_limiter.limit("10/minute")
 async def auth_verify(request: Request, response: Response):
     """Validate the secret key and set an HttpOnly session cookie."""
     body = await request.json()
     key = body.get("key", "")
-    if key != settings.nexus_secret_key:
+    if not key or not hmac.compare_digest(key, settings.nexus_secret_key):
         return JSONResponse({"detail": "Unauthorized"}, status_code=401)
     response.set_cookie(
         key=_COOKIE_NAME,
