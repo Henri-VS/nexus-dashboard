@@ -2,7 +2,38 @@
 
 A self-hosted homelab dashboard. SvelteKit frontend, FastAPI backend, SQLite storage. 100% local — no cloud, no accounts, no telemetry.
 
-![Nexus Dashboard](<!-- add screenshot here -->)
+![Nexus Dashboard](docs/screenshots/hero.png)
+<!-- Screenshot: full dashboard overview — the widget grid with multiple widgets visible -->
+
+---
+
+## Contents
+
+- [⚠️ Built with AI](#️-built-with-ai--read-before-deploying)
+- [What Nexus does](#what-nexus-does)
+  - [Dashboard](#dashboard-widget-grid)
+  - [AI assistant](#ai-assistant)
+  - [Notes](#notes-built-in-editor)
+  - [Resources](#resources-document-library--ai-study-tools)
+  - [Security](#security-wazuh-integration)
+  - [Automations](#automations)
+  - [Calendar](#calendar)
+  - [Logs](#logs)
+  - [Settings](#settings)
+- [Tech stack](#tech-stack)
+- [Requirements](#requirements)
+- [Install](#install)
+  - [Method 1 — One-liner](#method-1--one-liner-linux--macos)
+  - [Method 2 — Docker Compose only](#method-2--docker-compose-only-any-os-full-manual-control)
+  - [Method 3 — Start script](#method-3--start-script-auto-ip-detection--nice-output)
+  - [Method 4 — Build from source](#method-4--build-from-source)
+- [Managing Nexus](#managing-nexus)
+- [Configuration](#configuration)
+- [Data and backups](#data-and-backups)
+- [Ports](#ports)
+- [NVIDIA GPU](#nvidia-gpu-faster-ollama-inference)
+- [Auth](#auth)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -24,6 +55,9 @@ That means:
 Nexus is a single-page-of-glass for your homelab. Everything you'd normally check across five browser tabs — system load, container health, security alerts, AI chat, your notes — lives in one dark-themed, self-hosted interface. Every integration degrades gracefully: if something isn't configured, you see realistic demo data instead of a broken widget.
 
 ### Dashboard (widget grid)
+
+![Dashboard](docs/screenshots/dashboard.png)
+<!-- Screenshot: the main widget grid — system stats, docker containers, weather, security alerts, notes preview all visible -->
 
 The home screen is a configurable widget grid. Available widgets:
 
@@ -53,6 +87,9 @@ You can reorder and configure widgets from the settings panel. Layout presets le
 
 ### AI assistant
 
+![AI assistant](docs/screenshots/ai.png)
+<!-- Screenshot: the /ai page showing a chat conversation with streaming response, model selector visible -->
+
 Full local AI chat powered by [Ollama](https://ollama.com/). No data leaves your machine.
 
 - **Streaming responses** via Server-Sent Events — characters appear as they generate
@@ -67,6 +104,9 @@ If Ollama isn't running, the AI tab tells you clearly — no other part of the d
 ---
 
 ### Notes (built-in editor)
+
+![Notes editor](docs/screenshots/notes.png)
+<!-- Screenshot: the /notes page — file tree on left, markdown editor in centre (split view), properties panel on right -->
 
 A full Obsidian-inspired notes system, completely local.
 
@@ -86,6 +126,9 @@ Notes are stored in your browser's localStorage by default. Wire up the backend 
 
 ### Resources (document library + AI study tools)
 
+![Resources](docs/screenshots/resources.png)
+<!-- Screenshot: the /resources page — folder tree on left, PDF preview in centre, file info + AI actions panel on right -->
+
 Upload your study materials, docs, and reference files. The AI can process them and turn them into interactive study tools.
 
 - **Upload** PDFs, PowerPoints, Markdown files, and images
@@ -100,6 +143,9 @@ Upload your study materials, docs, and reference files. The AI can process them 
 
 ### Security (Wazuh integration)
 
+![Security](docs/screenshots/security.png)
+<!-- Screenshot: the /security page — severity summary cards at top, alert table below with one row expanded showing full JSON -->
+
 A dedicated security monitoring page at `/security`.
 
 - Summary cards showing counts of CRIT / HIGH / WARN / INFO alerts
@@ -113,6 +159,9 @@ If Wazuh isn't configured, the page shows realistic mock alerts so the UI is alw
 ---
 
 ### Automations
+
+![Automations](docs/screenshots/automations.png)
+<!-- Screenshot: the /automations page — list of automation rules with enabled/disabled toggles, last run time -->
 
 Event-driven automation rules stored as Markdown files in `.nexus/automations/`. Human-editable — no GUI required, but a UI is provided.
 
@@ -151,6 +200,9 @@ A streaming log viewer at `/logs` that tails live log output from the backend vi
 ---
 
 ### Settings
+
+![Settings](docs/screenshots/settings.png)
+<!-- Screenshot: the /settings page — theme picker, integration config fields, widget toggles -->
 
 - **Theme switching** — built-in themes, switchable at runtime without a page reload
 - **CSS snippets** — drop `.css` files into `.nexus/snippets/` and they load automatically, like Obsidian snippets. Lets you tweak any part of the UI without touching source code
