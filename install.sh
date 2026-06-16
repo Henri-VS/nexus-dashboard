@@ -25,6 +25,29 @@ if ! command -v docker &>/dev/null; then
 fi
 ok "Docker found: $(docker --version)"
 
+# ── Check Docker daemon is running and accessible ──────────────────────────
+DOCKER_INFO=$(docker info 2>&1)
+if echo "$DOCKER_INFO" | grep -q "permission denied"; then
+  echo ""
+  echo -e "${RED}✗ Permission denied — your user can't access the Docker socket.${RESET}"
+  echo ""
+  echo "  Fix: add your user to the docker group, then re-run this script."
+  echo ""
+  echo "    sudo usermod -aG docker \$USER"
+  echo "    newgrp docker"
+  echo ""
+  exit 1
+elif echo "$DOCKER_INFO" | grep -q "Cannot connect\|no such file\|Is the docker daemon running"; then
+  echo ""
+  echo -e "${RED}✗ Docker daemon is not running.${RESET}"
+  echo ""
+  echo "    sudo systemctl start docker"
+  echo "    sudo systemctl enable docker   # auto-start on boot"
+  echo ""
+  exit 1
+fi
+ok "Docker daemon is running"
+
 # ── Check Docker Compose v2 ────────────────────────────────────────────────
 if ! docker compose version &>/dev/null 2>&1; then
   fail "Docker Compose v2 not found. Install: https://docs.docker.com/compose/install/"
