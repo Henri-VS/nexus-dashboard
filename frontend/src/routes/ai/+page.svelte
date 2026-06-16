@@ -6,6 +6,7 @@
 	import { selectedModel, nexusSettings, pendingAiContext } from '$lib/stores';
 	import { ai as aiApi, resources as resourcesApi } from '$lib/api';
 	import EmptyState from '$lib/components/EmptyState.svelte';
+	import { generateId } from '$lib/utils';
 
 	// ── Types ─────────────────────────────────────────────────────
 
@@ -194,7 +195,7 @@
 
 	function newConvObj(): Conversation {
 		return {
-			id:         crypto.randomUUID(),
+			id:         generateId(),
 			title:      'New conversation',
 			model:      $selectedModel,
 			messages:   [],
@@ -292,11 +293,11 @@
 
 		// Append user message + assistant placeholder in one reactive update
 		const userMsg: Message = {
-			id: crypto.randomUUID(), role: 'user',
+			id: generateId(), role: 'user',
 			content: text, streaming: false, error: false, timestamp: Date.now(),
 		};
 		let asstMsg: Message = {
-			id: crypto.randomUUID(), role: 'assistant',
+			id: generateId(), role: 'assistant',
 			content: '', streaming: true, error: false, timestamp: Date.now(),
 		};
 		conv.messages = [...conv.messages, userMsg, asstMsg];

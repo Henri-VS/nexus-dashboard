@@ -4,6 +4,7 @@
 	import { marked } from 'marked';
 	import { ai as aiApi } from '$lib/api';
 	import { overlayOpen, overlayPrefill, overlayAutoSend, selectedModel } from '$lib/stores';
+	import { generateId } from '$lib/utils';
 
 	marked.setOptions({ gfm: true, breaks: true });
 
@@ -19,7 +20,7 @@
 	let input = '';
 	let messages: Msg[] = [];
 	let streaming = false;
-	let conversationId: string = crypto.randomUUID();
+	let conversationId: string = generateId();
 
 	let inputEl:  HTMLTextAreaElement;
 	let threadEl: HTMLDivElement;
@@ -158,7 +159,7 @@
 
 	function newChat() {
 		messages = [];
-		conversationId = crypto.randomUUID();
+		conversationId = generateId();
 		input = '';
 		tick().then(() => inputEl?.focus());
 	}

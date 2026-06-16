@@ -26,6 +26,7 @@
 	import { pendingAiContext } from '$lib/stores';
 	import { resources as resourcesApi, ai as aiApi } from '$lib/api';
 	import EmptyState from '$lib/components/EmptyState.svelte';
+	import { generateId } from '$lib/utils';
 
 	marked.setOptions({ gfm: true, breaks: true });
 
@@ -203,7 +204,7 @@
 			if (sessionOnly) large.push(file.name);
 
 			const newFile: ResourceFile = {
-				id: crypto.randomUUID(),
+				id: generateId(),
 				name: file.name,
 				content,
 				type: ext,
@@ -242,7 +243,7 @@
 	function confirmNewFolder() {
 		if (!newFolderName.trim()) { newFolderOpen = false; return; }
 		const f: ResourceFolder = {
-			id: crypto.randomUUID(),
+			id: generateId(),
 			name: newFolderName.trim(),
 			parentId: newFolderParent || null,
 		};
@@ -431,7 +432,7 @@
 		const res = await aiApi.chat({
 			model:           $selectedModel,
 			message:         prompt,
-			conversation_id: crypto.randomUUID(),
+			conversation_id: generateId(),
 		});
 		if (!res.ok) return '';
 		let out = '';
