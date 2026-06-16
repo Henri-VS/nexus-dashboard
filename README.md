@@ -270,4 +270,19 @@ Leave `NEXUS_SECRET_KEY` empty to disable auth entirely (local dev only — not 
 ## Troubleshooting
 
 **Dashboard loads but "cannot connect to API"**  
-Your `HOST_IP` is wrong or not set. Run the start script again — it auto-detects the IP. Or check the value in `.env` and make sure it matches your machine'
+Your `HOST_IP` is wrong or not set. Run the start script again — it auto-detects the IP. Or check the value in `.env` and make sure it matches your machine's actual LAN IP.
+
+**Port 3000 already in use**  
+Edit `docker-compose-hub.yml` and change `"3000:3000"` to `"3001:3000"` (or any free port).
+
+**Images won't pull**  
+Check your internet connection and that Docker Desktop is running. Try `docker pull henriVS/nexus-frontend:latest` manually to see the error.
+
+**Backend health check failing**  
+Run `docker compose -f docker-compose-hub.yml logs backend` and check for Python errors. Most common cause: `NEXUS_SECRET_KEY` is not set in `.env`.
+
+---
+
+## License
+
+MIT — free to use, modify, and self-host.
