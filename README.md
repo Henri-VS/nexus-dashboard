@@ -33,6 +33,7 @@ A self-hosted homelab dashboard. SvelteKit frontend, FastAPI backend, SQLite sto
 - [Ports](#ports)
 - [NVIDIA GPU](#nvidia-gpu-faster-ollama-inference)
 - [Auth](#auth)
+- [Security Notes](#security-notes)
 - [Troubleshooting](#troubleshooting)
 
 ---
@@ -53,6 +54,8 @@ That means:
 ## What Nexus does
 
 Nexus is a single-page-of-glass for your homelab. Everything you'd normally check across five browser tabs — system load, container health, security alerts, AI chat, your notes — lives in one dark-themed, self-hosted interface. Every integration degrades gracefully: if something isn't configured, you see realistic demo data instead of a broken widget.
+
+> **Integration status:** Widgets show realistic mock data when an integration is not configured. "Not configured" means the relevant env var is empty — the widget switches to live data automatically once you set it. All integrations listed below have working backend implementations; none are UI-only placeholders.
 
 ### Dashboard (widget grid)
 
@@ -437,6 +440,16 @@ docker compose -f docker-compose-hub.yml -f docker-compose.gpu.yml up -d
 Every `/api/` request requires `Authorization: Bearer <NEXUS_SECRET_KEY>`. The frontend prompts for the key on first launch and stores it in `localStorage`. `/healthz` is public (for uptime monitoring).
 
 Set `NEXUS_SECRET_KEY` to an empty string to disable auth entirely — only do this on a fully isolated local network.
+
+---
+
+## Security Notes
+
+**Docker socket access.** The backend container mounts `/var/run/docker.sock` to power the Containers widget. Even with `:ro`, this gives the container root-equivalent access to the Docker daemon on your host. For a homelab on a trusted local network this is an acceptable tradeoff, but do not expose the backend port (8088) to the internet — use a reverse proxy with auth if you need external access.
+
+**Auth model.** After the first-launch setup screen, the secret key is stored in your browser's `localStorage`. This is sufficient for a single-user local network tool but is not hardened against a compromised browser extension or a malicious CSS import. Do not reuse your `NEXUS_SECRET_KEY` for anything else, and treat it like a password.
+
+**Notes storage.** Notes are stored in browser `localStorage` by default, which has a 5–10 MB browser limit. For serious note-taking, set `OBSIDIAN_VAULT_PATH` in `.env` to point at your Obsidian vault — that directory is mounted read-only into the backend container and served directly, with no size limit.
 
 ---
 

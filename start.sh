@@ -31,6 +31,15 @@ if [ ! -f ".env" ]; then
   exit 1
 fi
 
+# ── Validate OBSIDIAN_VAULT_PATH if set ────────────────────────
+VAULT_PATH=$(grep -E '^OBSIDIAN_VAULT_PATH=' .env 2>/dev/null | cut -d= -f2-)
+if [ -n "$VAULT_PATH" ] && [ ! -d "$VAULT_PATH" ]; then
+  echo ""
+  echo "Warning: OBSIDIAN_VAULT_PATH is set to '$VAULT_PATH' but that directory"
+  echo "does not exist. The vault mount will be empty. Check your .env."
+  echo ""
+fi
+
 # ── Start ──────────────────────────────────────────────────────
 echo "Starting Nexus Dashboard..."
 echo ""
