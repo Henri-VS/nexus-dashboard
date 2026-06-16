@@ -54,6 +54,13 @@ class Settings(BaseSettings):
     weather_location_name: str   = ""
     weather_timezone:      str   = "auto"
 
+    @field_validator("weather_lat", "weather_lon", mode="before")
+    @classmethod
+    def empty_str_to_zero(cls, v: object) -> object:
+        if v == "" or v is None:
+            return 0.0
+        return v
+
     # TryHackMe
     thm_username: str = ""
 
