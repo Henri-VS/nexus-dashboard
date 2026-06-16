@@ -108,7 +108,7 @@
 
 	// ── Date formatter ────────────────────────────────────────────────────
 	function fmtDate(ts: number): string {
-		return new Date(ts).toLocaleString('en-ZA', {
+		return new Date(ts).toLocaleString(undefined, {
 			year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
 		});
 	}

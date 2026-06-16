@@ -35,7 +35,7 @@
 	let now = new Date();
 	let clockTimer: ReturnType<typeof setInterval>;
 
-	$: timeStr = now.toLocaleTimeString('en-ZA', {
+	$: timeStr = now.toLocaleTimeString(undefined, {
 		hour:   '2-digit',
 		minute: '2-digit',
 		second: '2-digit',
