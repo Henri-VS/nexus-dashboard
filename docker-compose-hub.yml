@@ -32,7 +32,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./data:/app/data
+      - ./data:/app/data:z
       - ${OBSIDIAN_VAULT_PATH:-./data/vault}:/vault:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     healthcheck:

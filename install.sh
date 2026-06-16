@@ -56,7 +56,7 @@ ok "Docker Compose found: $(docker compose version --short 2>/dev/null || docker
 
 # ── Create install directory ───────────────────────────────────────────────
 info "Creating ./${DIR}/ directory..."
-mkdir -p "$DIR"
+mkdir -p "$DIR/data"
 cd "$DIR"
 ok "Working in $(pwd)"
 
