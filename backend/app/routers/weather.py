@@ -48,7 +48,7 @@ async def get_current_weather():
             "apparent_temperature",
         ]),
         "daily": "weathercode,temperature_2m_max,temperature_2m_min",
-        "timezone": "Africa/Johannesburg",
+        "timezone": settings.weather_timezone,
         "forecast_days": 5,
     }
 

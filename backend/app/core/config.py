@@ -49,9 +49,10 @@ class Settings(BaseSettings):
     mqtt_password: str = ""
 
     # Weather — set your location in .env (see .env.example)
-    weather_lat: float = 0.0
-    weather_lon: float = 0.0
-    weather_location_name: str = ""
+    weather_lat:           float = 0.0
+    weather_lon:           float = 0.0
+    weather_location_name: str   = ""
+    weather_timezone:      str   = "auto"
 
     # TryHackMe
     thm_username: str = ""
