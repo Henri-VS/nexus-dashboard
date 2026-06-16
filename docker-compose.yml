@@ -1,0 +1,65 @@
+# Nexus Dashboard — build from source (developer use)
+# ────────────────────────────────────────────────────
+# For regular use, see docker-compose-hub.yml (pre-built images, no cloning needed).
+#
+# Build and run:
+#   docker compose up --build -d
+#
+# After building, push to Docker Hub:
+#   docker push henriVS/nexus-frontend:latest
+#   docker push henriVS/nexus-backend:latest
+
+services:
+
+  frontend:
+    image: henriVS/nexus-frontend:latest   # tagged automatically on build
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - PUBLIC_API_URL=http://${HOST_IP:-localhost}:8088
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - nexus
+
+  backend:
+    image: henriVS/nexus-backend:latest    # tagged automatically on build
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8088:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ${OBSIDIAN_VAULT_PATH:-./data/vault}:/vault:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - nexus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  excalidraw:
+    image: excalidraw/excalidraw:latest
+    ports:
+      - "3002:80"
+    restart: unless-stopped
+    networks:
+      - nexus
+
+networks:
+  nexus:
+    driver: bridge

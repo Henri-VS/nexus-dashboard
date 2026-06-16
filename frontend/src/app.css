@@ -1,0 +1,197 @@
+/* ── Fonts ───────────────────────────────────────────────────── */
+@import '@fontsource/geist-sans/400.css';
+@import '@fontsource/geist-sans/500.css';
+@import '@fontsource/geist-sans/600.css';
+@import '@fontsource/geist-sans/700.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
+@import '@fontsource/jetbrains-mono/700.css';
+
+/* ── Canonical CSS custom properties ────────────────────────── */
+:root {
+  /* Typography */
+  --font-ui:   'Geist Sans', 'Geist', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Backgrounds — darkest → lightest */
+  --bg0: #0d1117;
+  --bg1: #161b22;
+  --bg2: #21262d;
+  --bg3: #2c3440;
+
+  /* Borders */
+  --border: #30363d;
+
+  /* Text */
+  --text0: #e6edf3;
+  --text1: #8b949e;
+  --text2: #484f58;
+
+  /* Semantic colours */
+  --red:    #f85149;
+  --yellow: #e3b341;
+  --green:  #3fb950;
+
+  /* Accent palette */
+  --accent:  #3fb950;
+  --accent2: #58a6ff;
+  --accent3: #bc8cff;
+  --accent4: #f78166;
+
+  /* Layout */
+  --sidebar-w:           220px;
+  --sidebar-w-collapsed: 52px;
+  --topbar-h:            57px;
+  --widget-radius:       8px;
+  --card-radius:         8px;
+  --border-radius:       6px;
+  --radius:              6px;
+  --card-pad:            1rem;
+
+  /* Widget category accent bars (3px left border) */
+  --accent-system:   #3fb950;   /* green */
+  --accent-security: #f85149;   /* red */
+  --accent-docker:   #58a6ff;   /* blue — NOT green */
+  --accent-notes:    #bc8cff;   /* purple */
+  --accent-learn:    #e3b341;   /* yellow */
+  --accent-home:     var(--accent4);
+  --accent-weather:  #58a6ff;   /* blue */
+  --accent-news:     #30363d;   /* neutral */
+
+  /* ── Backwards-compatible aliases ──────────────────────────── */
+  --bg-base:        var(--bg0);
+  --bg-surface:     var(--bg1);
+  --bg-overlay:     var(--bg2);
+  --text-primary:   var(--text0);
+  --text-secondary: var(--text1);
+  --text-muted:     var(--text2);
+  --accent-green:   var(--green);
+  --accent-blue:    var(--accent2);
+  --accent-purple:  var(--accent3);
+  --accent-orange:  var(--accent4);
+  --accent-red:     var(--red);
+  --accent-yellow:  var(--yellow);
+  --accent-ai:      var(--accent3);
+  --teal:           #2bbc8a;
+}
+
+/* ── Reset ──────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-ui);
+  background: var(--bg0);
+  color: var(--text0);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Links ──────────────────────────────────────────────────── */
+a {
+  color: var(--accent2);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #30363d; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text2); }
+
+/* ── Focus ring ─────────────────────────────────────────────── */
+:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ── Form elements ──────────────────────────────────────────── */
+button {
+  font-family: var(--font-ui);
+  cursor: pointer;
+}
+
+input, textarea, select {
+  font-family: var(--font-ui);
+}
+
+select option {
+  background: var(--bg2);
+  color: var(--text0);
+}
+
+/* ── Monospace elements ─────────────────────────────────────── */
+code, pre, kbd {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
+kbd {
+  display: inline-block;
+  padding: 0.1em 0.35em;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-size: 0.75em;
+  color: var(--text1);
+}
+
+/* ── Keyframe animations ────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -500px 0; }
+  100% { background-position:  500px 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.25; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Mobile: global tap target floor ───────────────────────── */
+@media (max-width: 768px) {
+  button, [role="button"], a {
+    min-height: 44px;
+  }
+  .pill, .filter-btn, .cat-badge, .sz-btn, .add-save, .add-cancel,
+  .add-btn, .rm-btn, .del-btn, .retry-btn {
+    min-height: unset;
+  }
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    overflow-x: hidden;
+  }
+}
+
+/* ── Utility: pill / badge ──────────────────────────────────── */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  color: var(--text1);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}

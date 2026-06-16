@@ -1,0 +1,60 @@
+# Nexus Dashboard — pre-built images (no source code needed)
+# ──────────────────────────────────────────────────────────
+# Quickstart:
+#   Linux/Mac:  ./start.sh
+#   Windows:    .\start.ps1
+#
+# Manual:
+#   1. Copy .env.example to .env and edit it
+#   2. Set HOST_IP= in .env to your machine's local IP (e.g. 192.168.1.50)
+#   3. docker compose -f docker-compose-hub.yml up -d
+#   4. Open http://<your-local-ip>:3000   (printed by start.sh/start.ps1)
+
+services:
+
+  frontend:
+    image: henriVS/nexus-frontend:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - PUBLIC_API_URL=http://${HOST_IP:-localhost}:8088
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - nexus
+
+  backend:
+    image: henriVS/nexus-backend:latest
+    ports:
+      - "8088:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ${OBSIDIAN_VAULT_PATH:-./data/vault}:/vault:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - nexus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  excalidraw:
+    image: excalidraw/excalidraw:latest
+    ports:
+      - "3002:80"
+    restart: unless-stopped
+    networks:
+      - nexus
+
+networks:
+  nexus:
+    driver: bridge

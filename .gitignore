@@ -1,0 +1,38 @@
+# Environment — never commit secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+
+# Node / SvelteKit
+node_modules/
+.svelte-kit/
+frontend/build/
+
+# Data volumes (runtime state, not source)
+data/db/
+data/
+
+# Logs
+backend/uvicorn.log
+*.log
+
+# Claude / editor config
+.claude/
+
+# Developer prompt docs (not for public repo)
+PROMPTS_*.md
+NEXUS_CLAUDE_CODE_PROMPTS.md
+
+# Old file name — replaced by docker-compose-hub.yml
+docker-compose.hub.yml
+
+# OS
+.DS_Store
+Thumbs.db
