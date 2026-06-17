@@ -26,52 +26,11 @@
 	let thmRooms   = 0;
 	let thmOffline = true;
 
-	const _THM_MOCK = { points: 12_450, rank: 'Hacker', streak: 0, rooms: 44 };
+	const _THM_MOCK = { points: 0, rank: '—', streak: 0, rooms: 0 };
 
-	const ROOMS: Room[] = [
-		{ name: 'Linux Fundamentals 1',     pct: 100, status: 'complete'    },
-		{ name: 'Linux Fundamentals 2',     pct: 100, status: 'complete'    },
-		{ name: 'Linux Fundamentals 3',     pct: 100, status: 'complete'    },
-		{ name: 'Nmap',                      pct: 80,  status: 'in-progress' },
-		{ name: 'Metasploit: Introduction', pct: 0,   status: 'not-started' },
-		{ name: 'Burp Suite Basics',        pct: 0,   status: 'not-started' },
-		{ name: 'OWASP Top 10',            pct: 0,   status: 'not-started' },
-	];
+	const ROOMS: Room[] = [];
 
-	const CERTS: Cert[] = [
-		{
-			name:       'CompTIA Security+',
-			shortName:  'Sec+',
-			targetDate: '2026-10-15',
-			pct:        35,
-			status:     'studying',
-			accentVar:  'var(--accent)',
-		},
-		{
-			name:       'Cisco CCNA',
-			shortName:  'CCNA',
-			targetDate: '2027-07-10',
-			pct:        5,
-			status:     'upcoming',
-			accentVar:  'var(--accent2)',
-		},
-		{
-			name:       'CompTIA CySA+',
-			shortName:  'CySA+',
-			targetDate: '2027-11-20',
-			pct:        0,
-			status:     'not-started',
-			accentVar:  'var(--accent3)',
-		},
-		{
-			name:       'OSCP',
-			shortName:  'OSCP',
-			targetDate: '2028-05-01',
-			pct:        0,
-			status:     'not-started',
-			accentVar:  'var(--red)',
-		},
-	];
+	const CERTS: Cert[] = [];
 
 	onMount(async () => {
 		const res = await learnApi.progress();
@@ -322,6 +281,12 @@
 								<button class="collapse-btn" on:click={() => (roomsOpen = !roomsOpen)} aria-label={roomsOpen ? 'Collapse' : 'Expand'}>{roomsOpen ? '▲' : '▼'}</button>
 							</div>
 							{#if roomsOpen}
+							{#if ROOMS.length === 0}
+							<div class="empty-state">
+								No rooms tracked yet — add your TryHackMe rooms here.
+								<button class="add-btn">+ Add room</button>
+							</div>
+							{:else}
 							<div class="room-list">
 								{#each ROOMS as room}
 									<div class="room-row">
@@ -338,6 +303,7 @@
 								{/each}
 							</div>
 							{/if}
+							{/if}
 						</div>
 					</div>
 
@@ -353,6 +319,11 @@
 								<button class="collapse-btn" on:click={() => (certsOpen = !certsOpen)} aria-label={certsOpen ? 'Collapse' : 'Expand'}>{certsOpen ? '▲' : '▼'}</button>
 							</div>
 							{#if certsOpen}
+							{#if CERTS.length === 0}
+							<div class="empty-state">
+								No certifications added yet — track your study goals here.
+							</div>
+							{:else}
 							<div class="cert-list">
 								{#each CERTS as cert}
 									{@const days = daysUntil(cert.targetDate)}
@@ -377,6 +348,7 @@
 									</div>
 								{/each}
 							</div>
+							{/if}
 							{/if}
 						</div>
 					</div>
@@ -782,6 +754,31 @@
 		flex-shrink: 0;
 		min-width: 2.5ch;
 		text-align: right;
+	}
+
+	/* ── Empty states ───────────────────────────────────────── */
+	.empty-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 1.5rem 1rem;
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		color: var(--text2);
+		text-align: center;
+	}
+
+	.add-btn {
+		background: none;
+		border: 1px dashed var(--border);
+		border-radius: var(--radius);
+		color: var(--text2);
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		padding: 0.3rem 0.75rem;
+		cursor: not-allowed;
+		transition: color 0.1s, border-color 0.1s;
 	}
 
 	/* ── Responsive ─────────────────────────────────────────── */

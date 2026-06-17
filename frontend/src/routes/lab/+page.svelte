@@ -40,14 +40,7 @@
 		{ id: '10', severity: 'INFO', rule_id: '5501',   description: 'User login success (console)',                  src_ip: '192.168.1.10',  agent: 'pi-hole',        timestamp: '2026-06-07 12:10:00' },
 	];
 
-	const CONTAINERS: Container[] = [
-		{ name: 'homelab-frontend', image: 'homelab-frontend:latest',                               status: 'running',    uptime: '2d 4h 18m',  restarts: 0 },
-		{ name: 'homelab-backend',  image: 'homelab-backend:latest',                                status: 'running',    uptime: '2d 4h 18m',  restarts: 1 },
-		{ name: 'ollama',           image: 'ollama/ollama:latest',                                  status: 'running',    uptime: '5d 12h 44m', restarts: 0 },
-		{ name: 'wazuh-manager',    image: 'wazuh/wazuh-manager:4.7.0',                             status: 'running',    uptime: '5d 12h 44m', restarts: 0 },
-		{ name: 'crafty',           image: 'registry.gitlab.com/crafty-controller/crafty-4:latest', status: 'running',    uptime: '3d 7h 02m',  restarts: 0 },
-		{ name: 'pihole',           image: 'pihole/pihole:latest',                                  status: 'exited',     uptime: '—',          restarts: 3 },
-	];
+	const CONTAINERS: Container[] = [];
 
 	// ── State ─────────────────────────────────────────────────────
 	let filter: Severity = 'ALL';
@@ -495,9 +488,11 @@
 							<div class="title-row">
 								<span class="accent-bar" style="background: var(--teal)"></span>
 								<h2>docker containers</h2>
+								{#if CONTAINERS.length > 0}
 								<span class="pill" style="color: var(--green); border-color: color-mix(in srgb, var(--green) 30%, var(--border))">
 									{CONTAINERS.filter((c) => c.status === 'running').length}/{CONTAINERS.length} running
 								</span>
+								{/if}
 							</div>
 							<div class="header-right">
 							<span class="offline-badge">— offline —</span>
@@ -509,6 +504,9 @@
 						</div>
 						</div>
 						{#if dockerOpen}
+						{#if CONTAINERS.length === 0}
+						<div class="empty">Connect Docker to see your containers</div>
+						{:else}
 						<div class="scroll-wrap">
 							<table>
 								<thead>
@@ -534,6 +532,7 @@
 								</tbody>
 							</table>
 						</div>
+						{/if}
 						{/if}
 					</section>
 				{/if}
